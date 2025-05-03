@@ -5,92 +5,152 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lista de Compras</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      padding: 20px;
-      max-width: 700px;
-      margin: auto;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    .total {
-      font-size: 1.2em;
-      margin: 10px 0;
-      text-align: center;
-      font-weight: bold;
-    }
-    .input-group {
-      display: flex;
-	  flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    input[type="text"], input[type="number"], textarea {
-      padding: 10px;
-      flex: 1;
-    }
-    button {
-      padding: 10px 15px;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-    }
-    .btn-add {
-      background-color: #28a745;
-      color: white;
-    }
-    .btn-export, .btn-import {
-      background-color: #007bff;
-      color: white;
-      margin: 5px 0;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      background-color: white;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      padding: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: 5px;
-    }
-    li.coletado {
-      background-color: #d4edda;
-    }
-    .item-info {
-      flex: 1;
-      display: flex;
-      align-items: center;
-    }
-    .item-info img {
-      margin-right: 10px;
-    }
-    .item-buttons {
-      display: flex;
-      gap: 10px;
-    }
-    .btn-delete {
-      background-color: #dc3545;
-      color: white;
-    }
-    .btn-coletado {
-      background-color: #17a2b8;
-      color: white;
-    }
-    .btn-edit {
-      background-color: #ffc107;
-      color: white;
-    }
-    input[type="number"].edit {
-      width: 80px;
-    }
+       body {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px;
+  max-width: 700px;
+  margin: auto;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.total {
+  font-size: 1.2em;
+  margin: 10px 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.input-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+  padding: 10px;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.btn-add {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-export,
+.btn-import {
+  background-color: #007bff;
+  color: white;
+  margin: 5px 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background-color: white;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+}
+
+li.coletado {
+  background-color: #d4edda;
+}
+
+.item-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.item-info img {
+  margin-right: 10px;
+}
+
+.item-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-coletado {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-edit {
+  background-color: #ffc107;
+  color: white;
+}
+
+input[type="number"].edit {
+  width: 80px;
+}
+
+/* RESPONSIVIDADE PARA TELAS PEQUENAS */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  .input-group {
+    flex-direction: column;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .item-buttons {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .total {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+  }
+
+  input[type="number"].edit {
+    width: 100%;
+  }
+}
   </style>
 </head>
 <body>
