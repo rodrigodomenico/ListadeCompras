@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Compras</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .total {
+      font-size: 1.2em;
+      margin: 10px 0;
+      text-align: center;
+      font-weight: bold;
+    }
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    input[type="text"], input[type="number"], textarea {
+      padding: 10px;
+      flex: 1;
+    }
+    button {
+      padding: 10px 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
+    .btn-add {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-export, .btn-import {
+      background-color: #007bff;
+      color: white;
+      margin: 5px 0;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background-color: white;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 5px;
+    }
+    li.coletado {
+      background-color: #d4edda;
+    }
+    .item-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    .item-info img {
+      margin-right: 10px;
+    }
+    .item-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+    .btn-coletado {
+      background-color: #17a2b8;
+      color: white;
+    }
+    .btn-edit {
+      background-color: #ffc107;
+      color: white;
+    }
+    input[type="number"].edit {
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lista de Compras</h1>
+
+  <div class="total">
+    <div>Itens comprados 🛒: <span id="itensComprados">0</span></div>
+    <div>A pagar 💸: R$: <span id="valorPagar">0.00</span></div>
+  </div>
+
+  <div class="input-group">
+    <input type="text" id="item" placeholder="Item">
+    <input type="number" id="valor" placeholder="Valor" step="0.01">
+    <button class="btn-add" onclick="adicionarItem()">Adicionar</button>
+  </div>
+
+  <textarea id="importarTexto" placeholder="Cole sua lista de compras aqui..." rows="6" style="width: 100%;"></textarea>
+  <button class="btn-import" onclick="importarTextoLista()">Importar Lista de Texto</button>
+  <button class="btn-export" onclick="exportarLista()">Exportar</button>
+  <br/><br/>
+  <div>Total de itens: <span id="totalItens">0</span></div>
+  <div>Total R$: <span id="totalValor">0.00</span></div>
+  <ul id="listaCompras"></ul>
+  
+
+  <script>
+    let lista = JSON.parse(localStorage.getItem('listaCompras') || '[]');
+
+    function salvar() {
+      localStorage.setItem('listaCompras', JSON.stringify(lista));
+      renderizar();
+    }
+
+    function adicionarItem() {
+      const item = document.getElementById('item').value.trim();
+      const valor = parseFloat(document.getElementById('valor').value);
+      if (!item || isNaN(valor)) return alert('Preencha o item e valor corretamente.');
+
+      lista.push({ item, valor, coletado: false });
+      document.getElementById('item').value = '';
+      document.getElementById('valor').value = '';
+      salvar();
+    }
+
+    function renderizar() {
+      const ul = document.getElementById('listaCompras');
+      ul.innerHTML = '';
+      let total = 0;
+      let totalPago = 0;
+      let totalItens = lista.length;
+      let itensComprados = 0;
+
+      lista.forEach((i, idx) => {
+        const li = document.createElement('li');
+        if (i.coletado) li.classList.add('coletado');
+
+        li.innerHTML = `
+          <div class="item-info">
+            <strong>${ i.item }</strong> - R$ 
+            <span id="valor-${idx}">${i.valor.toFixed(2)}</span>
+            <input type="number" id="edit-${idx}" class="edit" value="${i.valor.toFixed(2)}" style="display:none" onchange="editarValor(${idx})">
+          </div>
+          <div class="item-buttons">
+            <button class="btn-coletado" onclick="toggleColetado(${idx})">✔️</button>
+            <button class="btn-edit" onclick="toggleEditar(${idx})">✏️</button>
+            <button class="btn-delete" onclick="excluirItem(${idx})">🗑️</button>
+          </div>
+        `;
+        ul.appendChild(li);
+
+        if (i.coletado) {
+          totalPago += i.valor;
+          itensComprados++;
+        } else {
+          total += i.valor;
+        }
+      });
+
+      // Atualizar contadores e valores totais
+    document.getElementById('totalItens').innerText = totalItens;
+    document.getElementById('itensComprados').innerText = itensComprados;
+    document.getElementById('totalValor').innerText = (total + totalPago).toFixed(2); // todos os itens
+    document.getElementById('valorPagar').innerText = totalPago.toFixed(2); // apenas os comprados (verdes)
+
+    }
+
+    function toggleColetado(index) {
+      lista[index].coletado = !lista[index].coletado;
+      salvar();
+    }
+
+    function excluirItem(index) {
+      if (confirm('Deseja remover este item?')) {
+        lista.splice(index, 1);
+        salvar();
+      }
+    }
+
+    function editarValor(index) {
+      const novoValor = parseFloat(document.getElementById(`edit-${index}`).value);
+      if (!isNaN(novoValor)) {
+        lista[index].valor = novoValor;
+        salvar();
+      } else {
+        alert('Valor inválido.');
+      }
+    }
+
+    function toggleEditar(index) {
+      const valorSpan = document.getElementById(`valor-${index}`);
+      const inputEdit = document.getElementById(`edit-${index}`);
+      if (inputEdit.style.display === "none") {
+        inputEdit.style.display = "inline-block";
+        valorSpan.style.display = "none";
+      } else {
+        inputEdit.style.display = "none";
+        valorSpan.style.display = "inline-block";
+      }
+    }
+
+    function exportarLista() {
+      const blob = new Blob([JSON.stringify(lista, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'lista_compras.json';
+      a.click();
+    }
+
+    function importarTextoLista() {
+      const texto = document.getElementById('importarTexto').value.trim();
+      if (!texto) return alert('Por favor, cole a lista de compras.');
+
+      const itens = texto.split('\n').map(item => item.trim()).filter(item => item);
+      if (itens.length === 0) return alert('Nenhum item encontrado.');
+
+      // Adiciona os itens à lista com valor 0,00
+      itens.forEach(item => {
+        lista.push({ item, valor: 0.00, coletado: false });
+      });
+
+      document.getElementById('importarTexto').value = '';
+      salvar();
+    }
+
+    renderizar();
+  </script>
+</body>
+</html>
